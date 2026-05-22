@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Trace / Hold to Reveal</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main class="app" aria-label="Trace the Photo prototype">
+    <header class="topbar">
+      <button class="top-icon" type="button" aria-label="Back">‹</button>
+      <h1>Trace the Photo</h1>
+      <button class="top-icon dots" type="button" aria-label="More">•••</button>
+    </header>
+
+    <section class="canvas" id="canvas">
+      <div class="empty-state" id="emptyState">
+        <p>Choose a photo to begin</p>
+      </div>
+
+      <div class="image-box is-hidden" id="imageBox">
+        <img id="photo" alt="Chosen photo" />
+        <svg class="trace-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path id="tracePath" d=""></path>
+        </svg>
+        <div class="point-layer" id="pointLayer"></div>
+
+        <button class="placement-pill is-hidden" id="placementPill" type="button">
+          tap photo to place a voice point
+        </button>
+
+        <div class="memory-card is-hidden" id="memoryCard">
+          <p class="memory-title" id="memoryTitle">voice memory</p>
+          <p class="memory-text" id="memoryText"></p>
+          <div class="voice-row">
+            <span class="play-circle">▶</span>
+            <span id="voiceTimer">hold to listen</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="peek-help is-hidden" id="peekHelp">
+        Hold the black space around the photo to see hidden traces.
+      </p>
+    </section>
+
+    <section class="controls">
+      <label class="choose-photo" id="choosePhotoLabel" aria-label="Choose photo">
+        <input type="file" id="photoInput" accept="image/*" />
+      </label>
+
+      <button class="soft-btn is-hidden" id="addPointBtn" type="button">Add point</button>
+      <button class="soft-btn is-hidden" id="finishBtn" type="button">Save photo</button>
+      <button class="soft-btn is-hidden" id="editBtn" type="button">Edit</button>
+    </section>
+</main>
+
+  <div class="modal-backdrop is-hidden" id="memoryModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <section class="memory-modal">
+      <button class="modal-close" id="closeModal" type="button">×</button>
+      <h2 id="modalTitle">Add voice memory</h2>
+
+      <div class="point-preview">
+        <span></span>
+        <p>Point placed. Add a small cue and voice note.</p>
+      </div>
+
+      <label class="field-label" for="memoryDescription">Small cue</label>
+      <textarea
+        id="memoryDescription"
+        rows="3"
+        placeholder="Example: A joke, a story,..."
+      ></textarea>
+      <p class="word-limit-note"><span id="wordCounter">0</span>/6 words max</p>
+<div class="recorder">
+        <p class="recorder-title">Voice note</p>
+        <div class="recorder-controls">
+          <button id="recordBtn" type="button">Record</button>
+          <button id="stopBtn" type="button" disabled>Stop</button>
+          <button id="previewBtn" type="button" disabled>Preview</button>
+          <button id="deleteRecordingBtn" type="button" class="is-hidden">Delete</button>
+        </div>
+        <p class="record-status" id="recordStatus">No voice note yet.</p>
+      </div>
+
+      <button class="save-memory" id="saveMemoryBtn" type="button">Save point</button>
+    </section>
+  </div>
+
+  <audio id="audioPlayer"></audio>
+  <script src="js/script.js"></script>
+</body>
+</html>

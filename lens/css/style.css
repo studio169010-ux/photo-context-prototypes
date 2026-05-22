@@ -1,0 +1,1013 @@
+:root {
+  --black: #000;
+  --white: #fff;
+  --nav: #07101f;
+  --ink: #111;
+  --panel: rgba(238, 238, 232, 0.38);
+  --people-panel: rgba(204, 248, 189, 0.56);
+  --moment-panel: rgba(134, 173, 255, 0.54);
+  --perspective-panel: rgba(245, 184, 196, 0.55);
+  --hidden-panel: rgba(189, 180, 246, 0.55);
+  --paper: rgba(244, 244, 239, 0.9);
+  --people: #ccf8bd;
+  --moment: #86adff;
+  --perspective: #f5b8c4;
+  --hidden: #bdb4f6;
+  --hand-font: "Georgia", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+  --ui-font: "Georgia", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+  --stage-width: min(100vw, 430px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  background: #171717;
+  color: var(--white);
+  font-family: var(--ui-font);
+  overflow: hidden;
+}
+
+button,
+textarea,
+input {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.phone {
+  position: relative;
+  width: var(--stage-width);
+  height: 100dvh;
+  max-height: 920px;
+  min-height: 100dvh;
+  background: var(--black);
+  overflow: hidden;
+  border-inline: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  background: var(--black);
+}
+
+.photo-shell {
+  position: relative;
+  width: 100%;
+  margin-top: clamp(190px, 34dvh, 310px);
+  aspect-ratio: 546 / 369;
+  user-select: none;
+  touch-action: none;
+}
+
+.photo-shell img,
+.photo-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.photo-shell img {
+  display: none;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+body.has-photo .photo-shell img {
+  display: block;
+}
+
+body.has-photo .photo-placeholder {
+  display: none;
+}
+
+.photo-placeholder {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #1c1c1c, #080808);
+  border-block: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.photo-placeholder p {
+  margin: 0;
+  font-family: var(--hand-font);
+  font-size: 17px;
+  transform: rotate(-4deg);
+}
+
+.choose-photo {
+  position: absolute;
+  z-index: 5;
+  left: 14px;
+  top: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+body.has-stories .choose-photo {
+  display: none;
+}
+
+.add-story,
+.edit-story {
+  position: absolute;
+  z-index: 6;
+  right: 18px;
+  bottom: 28px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.add-story {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.add-story span {
+  font-family: var(--hand-font);
+  font-size: 17px;
+  transform: rotate(-7deg);
+}
+
+.add-story strong {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 3px solid #fff;
+  border-radius: 12px;
+  font-size: 40px;
+  line-height: 0.72;
+  font-weight: 500;
+}
+
+.edit-story {
+  display: none;
+  font-family: var(--hand-font);
+  font-size: 15px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  transform: rotate(-3deg);
+}
+
+body.has-stories .add-story {
+  display: none;
+}
+
+body.has-stories .edit-story {
+  display: block;
+}
+
+.fake-nav {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 64px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  place-items: center;
+  background: var(--nav);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-back {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 15px solid rgba(255, 255, 255, 0.82);
+}
+
+.nav-home {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.nav-menu {
+  width: 21px;
+  height: 16px;
+  position: relative;
+  border-top: 2px solid rgba(255, 255, 255, 0.72);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.72);
+}
+
+.nav-menu::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6px;
+  border-top: 2px solid rgba(255, 255, 255, 0.72);
+}
+
+.trace-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.trace-dot {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.12);
+  opacity: 0.22;
+}
+
+.trace-dot.people { background: var(--people); left: 32%; top: 47%; }
+.trace-dot.moment { background: var(--moment); left: 58%; top: 38%; }
+.trace-dot.perspective { background: var(--perspective); left: 48%; top: 64%; }
+.trace-dot.hidden { background: var(--hidden); left: 78%; top: 55%; }
+
+.lens-handle {
+  position: absolute;
+  z-index: 4;
+  width: 88px;
+  height: 34px;
+  border: 0;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  color: #050505;
+  cursor: grab;
+  box-shadow: none;
+  touch-action: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.has-stories .lens-handle {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lens-handle:active,
+.lens-handle.is-dragging {
+  cursor: grabbing;
+  filter: brightness(1.04);
+}
+
+.lens-label {
+  font-family: var(--hand-font);
+  font-size: 9.5px;
+  line-height: 1;
+  text-align: left;
+}
+
+.lens-icon,
+.category-icon {
+  display: grid;
+  place-items: center;
+}
+
+
+.lens-perspective .lens-label {
+  font-size: 7.7px;
+  letter-spacing: -0.35px;
+}
+
+.lens-perspective {
+  width: 90px;
+}
+
+.lens-icon svg,
+.category-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: #050505;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lens-people {
+  top: -34px;
+  left: 0;
+  background: var(--people);
+}
+
+.lens-moment {
+  top: -34px;
+  right: 0;
+  background: var(--moment);
+}
+
+.lens-perspective {
+  bottom: -34px;
+  left: 0;
+  background: var(--perspective);
+}
+
+.lens-hidden {
+  bottom: -34px;
+  right: 0;
+  background: var(--hidden);
+}
+
+.viewer-help {
+  position: absolute;
+  left: 50%;
+  bottom: 31px;
+  transform: translateX(-50%);
+  width: min(82%, 320px);
+  margin: 0;
+  color: rgba(255, 255, 255, 0.54);
+  font-family: var(--hand-font);
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+body.has-stories .viewer-help {
+  bottom: 78px;
+}
+
+.reveal-panel {
+  position: absolute;
+  z-index: 3;
+  width: min(75%, 315px);
+  min-height: 104px;
+  padding: 12px 13px 12px 15px;
+  color: var(--ink);
+  background: var(--panel);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: opacity 120ms ease, width 120ms ease, left 120ms ease;
+  pointer-events: auto;
+  overflow: hidden;
+  --content-width: 220px;
+  --content-left: 16px;
+}
+
+.reveal-panel.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.reveal-panel.people,
+.reveal-panel.moment,
+.reveal-panel.perspective,
+.reveal-panel.hidden {
+  border-left: 0;
+}
+
+.reveal-panel.people { background: var(--people-panel); }
+.reveal-panel.moment { background: var(--moment-panel); }
+.reveal-panel.perspective { background: var(--perspective-panel); }
+.reveal-panel.hidden { background: var(--hidden-panel); }
+
+.reveal-kicker {
+  position: relative;
+  left: var(--content-left);
+  width: var(--content-width);
+  margin: 0 0 4px;
+  font-family: var(--hand-font);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.72);
+}
+
+.reveal-stories {
+  position: relative;
+  left: var(--content-left);
+  width: var(--content-width);
+  display: grid;
+  gap: 9px;
+}
+
+.story-line {
+  display: grid;
+  gap: 8px;
+}
+
+.story-text {
+  margin: 0;
+  font-family: var(--hand-font);
+  font-size: clamp(12.5px, 3.05vw, 14.5px);
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.play-voice {
+  justify-self: start;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  color: rgba(0, 0, 0, 0.88);
+  padding: 6px 11px;
+  font-family: var(--hand-font);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(3px);
+}
+
+.story-modal {
+  position: relative;
+  width: min(340px, calc(100vw - 44px));
+  max-height: min(700px, calc(100dvh - 56px));
+  overflow: auto;
+  background: var(--paper);
+  color: #111;
+  padding: 26px 22px 22px;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  font-family: var(--ui-font);
+  font-size: 22px;
+  line-height: 1;
+  color: #222;
+  cursor: pointer;
+}
+
+.story-modal h1 {
+  margin: 0 0 10px;
+  font-family: var(--hand-font);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.category-btn {
+  min-height: 55px;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  border: 2px solid transparent;
+  color: #111;
+  padding: 6px 4px;
+  cursor: pointer;
+}
+
+.category-btn[data-category="people"] { background: var(--people); }
+.category-btn[data-category="moment"] { background: var(--moment); }
+.category-btn[data-category="perspective"] { background: var(--perspective); }
+.category-btn[data-category="hidden"] { background: var(--hidden); }
+
+.category-btn.is-selected {
+  border-color: #111;
+}
+
+.category-btn small {
+  font-family: var(--hand-font);
+  font-size: 9px;
+}
+
+.field-label {
+  display: block;
+  margin: 12px 0 6px;
+  font-family: var(--hand-font);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+textarea {
+  width: 100%;
+  resize: none;
+  border: 0;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.58);
+  color: #111;
+  outline: none;
+  min-height: 116px;
+  font-family: var(--hand-font);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+textarea::placeholder {
+  color: rgba(0, 0, 0, 0.32);
+  font-family: var(--hand-font);
+  font-size: 13px;
+}
+
+.counter {
+  margin: 3px 0 0;
+  text-align: right;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.52);
+}
+
+.recorder-card {
+  display: grid;
+  gap: 8px;
+}
+
+.record-btn,
+.save-story {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  color: #111;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 10px 12px;
+  font-family: var(--hand-font);
+  cursor: pointer;
+}
+
+.record-btn.is-recording {
+  background: #111;
+  color: #fff;
+}
+
+.record-btn.secondary {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.audio-preview {
+  width: 100%;
+}
+
+.recording-note {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 11px;
+}
+
+.save-story {
+  width: 100%;
+  margin-top: 16px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-height: 780px) {
+  .phone {
+    min-height: 100dvh;
+  }
+
+  .photo-shell {
+    margin-top: 34dvh;
+  }
+
+  .add-story,
+  .edit-story {
+    bottom: 20px;
+  }
+}
+
+/* v3: lens drawers are constrained to one vertical pull, not free floating */
+body.has-stories .lens-handle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.has-stories .lens-handle.has-story {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lens-handle {
+  transition: filter 120ms ease, opacity 140ms ease;
+  will-change: transform;
+}
+
+.lens-handle.is-open,
+.lens-handle.is-dragging {
+  z-index: 8;
+}
+
+.reveal-panel {
+  z-index: 6;
+  overflow: auto;
+  word-break: break-word;
+  box-shadow: 0 7px 22px rgba(0, 0, 0, 0.08);
+}
+
+.reveal-stories,
+.story-line,
+.story-text {
+  min-width: 0;
+}
+
+.story-text {
+  overflow-wrap: anywhere;
+}
+
+.viewer-help {
+  width: min(76%, 310px);
+}
+
+@media (max-width: 380px) {
+  .lens-handle {
+    width: 82px;
+  }
+
+  .lens-label {
+    font-size: 9px;
+  }
+
+  .story-text {
+    font-size: 13px;
+  }
+}
+
+/* v4: curtain interaction. The transparent layer is attached to the stripe and opens over the photo. */
+.viewer-help {
+  top: 20px;
+  bottom: auto;
+  z-index: 7;
+  width: min(78%, 310px);
+  pointer-events: none;
+}
+
+body.has-stories .viewer-help {
+  display: none;
+}
+
+.lens-handle {
+  z-index: 9;
+}
+
+.lens-handle.is-settling {
+  transition: transform 180ms ease, filter 120ms ease, opacity 140ms ease;
+}
+
+.reveal-panel {
+  padding: 12px 13px 12px 16px;
+  min-height: 0;
+  overflow: hidden auto;
+  border-left-width: 8px;
+  pointer-events: auto;
+  transition: height 170ms ease, top 170ms ease, opacity 120ms ease;
+}
+
+.reveal-panel.is-dragging {
+  transition: opacity 80ms ease;
+}
+
+.reveal-panel.curtain-top,
+.reveal-panel.curtain-bottom {
+  box-shadow: none;
+}
+
+.reveal-panel.curtain-top {
+  transform-origin: top center;
+}
+
+.reveal-panel.curtain-bottom {
+  transform-origin: bottom center;
+}
+
+.reveal-kicker {
+  margin-bottom: 4px;
+}
+
+.reveal-stories {
+  gap: 6px;
+}
+
+.story-text {
+  font-size: clamp(12px, 3.1vw, 15px);
+  line-height: 1.35;
+}
+
+.play-voice {
+  padding: 5px 10px;
+  font-size: 11px;
+}
+
+
+/* v5: curtains open sideways across the photo, not vertically. */
+.viewer-help {
+  display: none !important;
+}
+
+.lens-handle {
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  z-index: 9;
+  transition: filter 120ms ease, opacity 140ms ease;
+}
+
+.lens-handle.is-settling {
+  transition: transform 180ms ease, filter 120ms ease, opacity 140ms ease;
+}
+
+.lens-handle.is-dragging {
+  transition: none;
+}
+
+.lens-people {
+  top: 0;
+  left: 0;
+}
+
+.lens-moment {
+  top: 0;
+  right: 0;
+}
+
+.lens-perspective {
+  bottom: 0;
+  left: 0;
+}
+
+.lens-hidden {
+  bottom: 0;
+  right: 0;
+}
+
+.reveal-panel {
+  border-left: 0 !important;
+  border-radius: 0;
+  overflow: hidden;
+  min-height: 0;
+  padding: 12px 13px;
+  transition: opacity 120ms ease;
+}
+
+.reveal-panel.is-dragging {
+  transition: none;
+}
+
+.reveal-panel.curtain-left {
+  transform-origin: left center;
+}
+
+.reveal-panel.curtain-right {
+  transform-origin: right center;
+}
+
+.reveal-panel.row-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.reveal-kicker,
+.reveal-stories {
+  min-width: 0;
+}
+
+.story-text {
+  max-width: var(--content-width);
+}
+
+@media (max-width: 380px) {
+  .story-text {
+    max-width: var(--content-width);
+  }
+}
+
+/* fixed-v9: remove fake bottom phone navigation */
+.fake-nav,
+.nav-back,
+.nav-home,
+.nav-menu {
+  display: none !important;
+}
+
+.phone {
+  min-height: 100dvh;
+}
+
+.screen {
+  inset: 0 !important;
+}
+
+/* fixed-v9: make the photo area the upload control */
+body:not(.has-photo) .photo-shell {
+  cursor: pointer;
+}
+
+.choose-photo {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* fixed-v9: move story controls because bottom nav is gone */
+.add-story,
+.edit-story {
+  bottom: max(24px, env(safe-area-inset-bottom, 0px) + 22px) !important;
+}
+
+/* fixed-v9: readable phone-safe font */
+.add-story span,
+.edit-story,
+.photo-placeholder p,
+.viewer-help,
+.lens-label,
+.category-btn small,
+.story-modal h1,
+.field-label,
+textarea,
+textarea::placeholder,
+.record-btn,
+.save-story,
+.reveal-kicker,
+.story-text,
+.play-voice {
+  font-family: var(--hand-font) !important;
+}
+
+.photo-placeholder p {
+  font-size: 18px !important;
+  transform: none !important;
+}
+
+.add-story span {
+  font-size: 16px !important;
+  transform: none !important;
+}
+
+.edit-story {
+  font-size: 15px !important;
+  transform: none !important;
+}
+
+.lens-label {
+  font-size: 11px !important;
+  letter-spacing: -0.2px;
+}
+
+.lens-perspective .lens-label {
+  font-size: 9px !important;
+  letter-spacing: -0.45px;
+}
+
+.category-btn small {
+  font-size: 11px !important;
+}
+
+.story-modal h1 {
+  font-size: 19px !important;
+}
+
+.field-label {
+  font-size: 15px !important;
+}
+
+textarea {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+
+textarea::placeholder {
+  font-size: 15px !important;
+}
+
+.record-btn,
+.save-story {
+  font-size: 14px !important;
+}
+
+.recording-note {
+  font-size: 12px !important;
+}
+
+/* fixed-v9: keep reveal text inside its curtain */
+.reveal-panel {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: 10px 11px !important;
+}
+
+.reveal-kicker,
+.reveal-stories {
+  max-width: calc(100% - var(--content-left, 12px) - 10px) !important;
+  min-width: 0 !important;
+}
+
+.reveal-kicker {
+  font-size: 13px !important;
+  line-height: 1.25 !important;
+  margin-bottom: 5px !important;
+  white-space: normal !important;
+}
+
+.story-text {
+  font-size: clamp(15px, 4vw, 17px) !important;
+  line-height: 1.38 !important;
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  hyphens: auto;
+}
+
+.play-voice {
+  font-size: 13px !important;
+  padding: 7px 11px !important;
+}
+
+@media (max-width: 380px) {
+  .photo-shell {
+    margin-top: 30dvh !important;
+  }
+
+  .lens-handle {
+    width: 84px !important;
+  }
+
+  .lens-perspective {
+    width: 92px !important;
+  }
+
+  .story-text {
+    font-size: 15px !important;
+  }
+}
+
+@media (max-height: 720px) {
+  .photo-shell {
+    margin-top: 28dvh !important;
+  }
+
+  .story-modal {
+    max-height: calc(100dvh - 38px) !important;
+  }
+}
+
+
+/* recording fixes */
+#deleteRecordingButton {
+  justify-self: start;
+}
+
+.recording-note {
+  min-height: 16px;
+}
+
+
+/* final-tweaks: elegant readable serif font */
+:root {
+  --hand-font: "Georgia", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+  --ui-font: "Georgia", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+}
+
+body {
+  font-family: var(--ui-font);
+}
+
+button,
+textarea,
+input {
+  font-family: var(--hand-font);
+}

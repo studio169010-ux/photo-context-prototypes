@@ -1,0 +1,932 @@
+:root {
+  --black: #000;
+  --white: #fff;
+  --nav: #07101f;
+  --paper: rgba(244, 244, 239, 0.94);
+  --ink: #111;
+  --trace: #fff0a8;
+  --trace-glow: rgba(255, 240, 168, 0.72);
+  --hand-font: "Georgia", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+  --ui-font: "Georgia", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; }
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #171717;
+  color: var(--white);
+  font-family: var(--ui-font);
+  overflow: hidden;
+}
+
+button,
+textarea,
+input { font: inherit; }
+
+button { -webkit-tap-highlight-color: transparent; }
+
+.app {
+  position: relative;
+  width: 100vw;
+  max-width: 430px;
+  height: 100dvh;
+  min-height: 560px;
+  margin: 0 auto;
+  background: #000;
+  overflow: hidden;
+}
+
+.topbar {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(58px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  display: grid;
+  grid-template-columns: 54px 1fr 54px;
+  align-items: center;
+  background: #000;
+  color: #fff;
+}
+
+.topbar h1 {
+  margin: 0;
+  text-align: center;
+  font-family: var(--hand-font);
+  font-weight: 500;
+  font-size: clamp(17px, 5vw, 22px);
+}
+
+.top-icon {
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 36px;
+  line-height: 1;
+}
+
+.top-icon.dots {
+  font-family: var(--ui-font);
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.canvas {
+  position: absolute;
+  z-index: 1;
+  top: calc(58px + env(safe-area-inset-top, 0px));
+  bottom: env(safe-area-inset-bottom, 0px);
+  left: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  background: #000;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.empty-state {
+  display: grid;
+  place-items: center;
+  width: min(86vw, 330px);
+  min-height: 230px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+}
+
+.empty-state p {
+  margin: 0;
+  max-width: 180px;
+  text-align: center;
+  color: rgba(255,255,255,0.58);
+  font-family: var(--hand-font);
+  font-size: 18px;
+  transform: rotate(-4deg);
+}
+
+.image-box {
+  position: relative;
+  width: 320px;
+  height: 240px;
+  max-width: calc(100vw - 28px);
+  max-height: calc(100% - 28px);
+  overflow: visible;
+  touch-action: none;
+}
+
+.image-box img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+.point-layer,
+.trace-svg {
+  position: absolute;
+  inset: 0;
+}
+
+.trace-svg {
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+body.peek-traces .trace-svg,
+body.editor-mode .trace-svg { opacity: 1; }
+
+.trace-svg path {
+  fill: none;
+  stroke: rgba(255,255,255,0.82);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 3.5 5.5;
+  filter: drop-shadow(0 0 3px rgba(255, 240, 168, 0.38));
+}
+
+.point-layer {
+  z-index: 4;
+  pointer-events: auto;
+}
+
+.trace-point {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  transform: translate(-50%, -50%) scale(0.92);
+  border: 2px solid rgba(255,255,255,0.88);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(255,240,168,0.98) 0 10%, rgba(0,0,0,0.2) 11% 18%, rgba(255,255,255,0.18) 19% 28%, transparent 29%);
+  box-shadow:
+    0 0 0 6px rgba(255,240,168,0.06),
+    0 0 16px rgba(255,240,168,0.28);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+  cursor: pointer;
+  touch-action: none;
+}
+
+body.editor-mode .trace-point,
+body.peek-traces .trace-point,
+.trace-point.is-held,
+.trace-point.is-arming {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.viewer-mode .trace-point {
+  pointer-events: auto;
+}
+
+body.editor-mode .trace-point {
+  box-shadow:
+    0 0 0 6px rgba(255,240,168,0.10),
+    0 0 18px rgba(255,240,168,0.36);
+}
+
+body.peek-traces .trace-point {
+  animation: glowPoint 860ms ease-in-out infinite alternate;
+  box-shadow:
+    0 0 0 7px rgba(255, 224, 112, 0.08),
+    0 0 20px rgba(255, 220, 96, 0.42);
+}
+
+.trace-point.is-held {
+  transform: translate(-50%, -50%) scale(1.14);
+  opacity: 1;
+  animation: holdPoint 620ms ease-in-out infinite alternate;
+  box-shadow:
+    0 0 0 9px rgba(255, 255, 255, 0.12),
+    0 0 28px rgba(255, 255, 255, 0.78);
+}
+
+.trace-point.is-arming {
+  transform: translate(-50%, -50%) scale(1.06);
+  opacity: 1;
+  box-shadow:
+    0 0 0 12px rgba(255,240,168,0.08),
+    0 0 28px rgba(255,240,168,0.7);
+}
+
+@keyframes glowPoint {
+  from {
+    box-shadow:
+      0 0 0 6px rgba(255,240,168,0.06),
+      0 0 12px rgba(255,240,168,0.26);
+  }
+  to {
+    box-shadow:
+      0 0 0 11px rgba(255,240,168,0.06),
+      0 0 26px rgba(255,240,168,0.64);
+  }
+}
+
+@keyframes holdPoint {
+  from {
+    box-shadow:
+      0 0 0 8px rgba(255,240,168,0.10),
+      0 0 20px rgba(255,240,168,0.48);
+  }
+  to {
+    box-shadow:
+      0 0 0 15px rgba(255,240,168,0.04),
+      0 0 34px rgba(255,240,168,0.82);
+  }
+}
+
+.placement-pill {
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%) rotate(-2deg);
+  border: 1px solid rgba(255,255,255,0.72);
+  border-radius: 999px;
+  background: rgba(0,0,0,0.56);
+  color: rgba(255,255,255,0.9);
+  padding: 8px 12px;
+  font-family: var(--hand-font);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.memory-card {
+  position: absolute;
+  z-index: 12;
+  width: min(190px, 58vw);
+  padding: 12px 13px 11px;
+  background: rgba(245,244,237,0.94);
+  color: #111;
+  border: 1.5px solid rgba(0,0,0,0.68);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.28);
+  pointer-events: none;
+}
+
+.memory-card::after {
+  content: "";
+  position: absolute;
+  left: 26px;
+  bottom: -11px;
+  width: 20px;
+  height: 20px;
+  background: rgba(245,244,237,0.94);
+  border-right: 1.5px solid rgba(0,0,0,0.68);
+  border-bottom: 1.5px solid rgba(0,0,0,0.68);
+  transform: rotate(45deg);
+}
+
+.memory-title {
+  margin: 0 0 5px;
+  font-family: var(--hand-font);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.memory-text {
+  margin: 0 0 8px;
+  font-family: var(--hand-font);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.voice-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--hand-font);
+  font-size: 13px;
+}
+
+.play-circle {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 1.5px solid #111;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1;
+  padding-left: 2px;
+}
+
+.peek-help {
+  position: absolute;
+  left: 50%;
+  bottom: 9px;
+  width: min(86%, 330px);
+  transform: translateX(-50%);
+  margin: 0;
+  color: rgba(255,255,255,0.56);
+  font-family: var(--hand-font);
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: center;
+  pointer-events: none;
+}
+
+.controls {
+  position: absolute;
+  z-index: 15;
+  left: 0;
+  right: 0;
+  bottom: env(safe-area-inset-bottom, 0px);
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  padding: 0 14px 8px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.56));
+}
+
+.choose-photo,
+.soft-btn {
+  border: 1px solid rgba(255,255,255,0.68);
+  border-radius: 999px;
+  background: rgba(0,0,0,0.48);
+  color: #fff;
+  padding: 8px 12px;
+  font-family: var(--hand-font);
+  font-size: 13px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.choose-photo { margin-right: auto; }
+.choose-photo input { display: none; }
+
+body.viewer-mode #choosePhotoLabel { display: none; }
+
+.soft-btn { transform: rotate(-2deg); }
+
+.bottom-nav {
+  position: absolute;
+  z-index: 14;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  place-items: center;
+  background: var(--nav);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.86);
+  font-size: 30px;
+}
+
+.bottom-nav span:nth-child(2) { font-size: 32px; }
+.bottom-nav span:nth-child(3) { font-size: 27px; transform: rotate(180deg); }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.58);
+  backdrop-filter: blur(3px);
+}
+
+.memory-modal {
+  position: relative;
+  width: min(340px, calc(100vw - 42px));
+  max-height: min(720px, calc(100dvh - 52px));
+  overflow: auto;
+  background: var(--paper);
+  color: #111;
+  padding: 26px 22px 22px;
+  box-shadow: 0 20px 70px rgba(0,0,0,0.35);
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  font-family: var(--ui-font);
+  font-size: 24px;
+  line-height: 1;
+  color: #222;
+  cursor: pointer;
+}
+
+.memory-modal h2 {
+  margin: 0 0 12px;
+  font-family: var(--hand-font);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.point-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border: 1px dashed rgba(0,0,0,0.35);
+  background: rgba(255,255,255,0.28);
+}
+
+.point-preview span {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid #111;
+  background: var(--trace);
+}
+
+.point-preview p {
+  margin: 0;
+  font-family: var(--hand-font);
+  font-size: 12px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--hand-font);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 82px;
+  border: 1.5px solid rgba(0,0,0,0.64);
+  background: rgba(255,255,255,0.35);
+  color: #111;
+  padding: 10px;
+  outline: none;
+  font-family: var(--hand-font);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+textarea::placeholder { color: rgba(0,0,0,0.42); }
+
+.recorder {
+  border: 1.5px solid rgba(0,0,0,0.64);
+  padding: 12px;
+  background: rgba(255,255,255,0.24);
+}
+
+.recorder-title,
+.record-status {
+  margin: 0;
+  font-family: var(--hand-font);
+}
+
+.recorder-title {
+  margin-bottom: 9px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.recorder-controls {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.recorder-controls button,
+.save-memory {
+  border: 1.5px solid #111;
+  background: transparent;
+  color: #111;
+  padding: 8px 11px;
+  font-family: var(--hand-font);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.recorder-controls button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.record-status {
+  margin-top: 8px;
+  color: rgba(0,0,0,0.64);
+  font-size: 12px;
+}
+
+.save-memory {
+  width: 100%;
+  margin-top: 16px;
+  background: #111;
+  color: #fff;
+}
+
+.is-hidden { display: none !important; }
+
+
+/* fixed-trace: remove fake bottom navigation */
+.bottom-nav {
+  display: none !important;
+}
+
+/* fixed-trace: readable phone-safe font */
+.topbar h1,
+.empty-state p,
+.placement-pill,
+.memory-title,
+.memory-text,
+.voice-row,
+.peek-help,
+.choose-photo,
+.soft-btn,
+.memory-modal h2,
+.point-preview p,
+.field-label,
+textarea,
+textarea::placeholder,
+.recorder-title,
+.record-status,
+.recorder-controls button,
+.save-memory {
+  font-family: var(--hand-font) !important;
+}
+
+/* fixed-trace: make the empty photo area the upload control */
+body:not(.has-photo) .canvas,
+body:not(.has-photo) .empty-state {
+  cursor: pointer;
+}
+
+.empty-state {
+  width: min(88vw, 340px);
+  min-height: 250px;
+}
+
+.empty-state p {
+  font-size: 20px !important;
+  line-height: 1.3 !important;
+  color: rgba(255,255,255,0.68) !important;
+  transform: none !important;
+}
+
+/* fixed-trace: hide separate choose photo control */
+.choose-photo {
+  display: none !important;
+}
+
+/* fixed-trace: layout after nav removal */
+.canvas {
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.controls {
+  bottom: env(safe-area-inset-bottom, 0px) !important;
+  min-height: 64px !important;
+  padding: 8px 14px max(10px, env(safe-area-inset-bottom, 0px)) !important;
+  background: linear-gradient(transparent, rgba(0,0,0,0.66)) !important;
+}
+
+.soft-btn {
+  font-size: 14px !important;
+  transform: none !important;
+}
+
+.topbar h1 {
+  font-size: clamp(18px, 5vw, 22px) !important;
+}
+
+.placement-pill {
+  font-size: 13px !important;
+  transform: translateX(-50%) !important;
+}
+
+.peek-help {
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+}
+
+.memory-card {
+  width: min(210px, 66vw) !important;
+  padding: 13px 14px 12px !important;
+}
+
+.memory-title {
+  font-size: 13px !important;
+}
+
+.memory-text {
+  font-size: 15px !important;
+  line-height: 1.35 !important;
+}
+
+.voice-row {
+  font-size: 14px !important;
+}
+
+.memory-modal h2 {
+  font-size: 19px !important;
+}
+
+.point-preview p {
+  font-size: 13px !important;
+}
+
+.field-label {
+  font-size: 15px !important;
+}
+
+textarea {
+  font-size: 16px !important;
+  line-height: 1.45 !important;
+}
+
+textarea::placeholder {
+  font-size: 15px !important;
+}
+
+.recorder-title {
+  font-size: 15px !important;
+}
+
+.record-status {
+  font-size: 13px !important;
+}
+
+.recorder-controls button,
+.save-memory {
+  font-size: 14px !important;
+}
+
+@media (max-height: 720px) {
+  .canvas {
+    bottom: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .controls {
+    min-height: 58px !important;
+  }
+
+  .memory-modal {
+    max-height: calc(100dvh - 38px) !important;
+  }
+}
+
+
+/* fixed-trace-v2: remove the connecting trace line completely */
+.trace-svg,
+.trace-svg path {
+  display: none !important;
+}
+
+/* fixed-trace-v2: make the photo dim slightly in hint mode so points stand out */
+.image-box img {
+  transition: opacity 160ms ease;
+}
+
+body.searching-traces .image-box img {
+  opacity: 0.52;
+}
+
+.trace-point {
+  width: 32px !important;
+  height: 32px !important;
+  border-width: 1.5px !important;
+  background:
+    radial-gradient(circle, rgba(255,240,168,1) 0 12%, rgba(0,0,0,0.28) 13% 21%, rgba(255,255,255,0.86) 22% 34%, transparent 35%) !important;
+  box-shadow:
+    0 0 0 5px rgba(255,240,168,0.05),
+    0 0 12px rgba(255,240,168,0.22) !important;
+}
+
+body.editor-mode .trace-point {
+  box-shadow:
+    0 0 0 5px rgba(255,240,168,0.08),
+    0 0 14px rgba(255,240,168,0.30) !important;
+}
+
+body.peek-traces .trace-point {
+  box-shadow:
+    0 0 0 6px rgba(255, 224, 112, 0.10),
+    0 0 18px rgba(255, 220, 96, 0.48) !important;
+}
+
+.trace-point.is-arming {
+  box-shadow:
+    0 0 0 8px rgba(255,240,168,0.08),
+    0 0 20px rgba(255,240,168,0.62) !important;
+}
+
+.trace-point.is-held {
+  box-shadow:
+    0 0 0 8px rgba(255,255,255,0.10),
+    0 0 22px rgba(255,255,255,0.78) !important;
+}
+
+@keyframes glowPoint {
+  from {
+    box-shadow:
+      0 0 0 5px rgba(255,240,168,0.06),
+      0 0 10px rgba(255,240,168,0.24);
+  }
+  to {
+    box-shadow:
+      0 0 0 9px rgba(255,240,168,0.08),
+      0 0 20px rgba(255,240,168,0.54);
+  }
+}
+
+@keyframes holdPoint {
+  from {
+    box-shadow:
+      0 0 0 6px rgba(255,255,255,0.08),
+      0 0 16px rgba(255,255,255,0.40);
+  }
+  to {
+    box-shadow:
+      0 0 0 10px rgba(255,255,255,0.04),
+      0 0 24px rgba(255,255,255,0.78);
+  }
+}
+
+
+/* fixed-trace-v3: dim photo only while searching outside the image, never while listening */
+body.peek-traces .image-box img {
+  opacity: 1;
+}
+
+body.searching-traces .image-box img {
+  opacity: 0.52;
+}
+
+body.point-listening .image-box img {
+  opacity: 1 !important;
+}
+
+
+/* recording and memory-card placement fixes */
+#deleteRecordingBtn {
+  border-color: rgba(120, 0, 0, 0.45);
+}
+
+.memory-card {
+  background: rgba(245, 244, 237, 0.82) !important;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.memory-card::after {
+  display: none !important;
+}
+
+.record-status {
+  min-height: 16px;
+}
+
+
+/* final-tweaks: elegant readable serif font */
+:root {
+  --hand-font: "Georgia", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+  --ui-font: "Georgia", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+}
+
+body {
+  font-family: var(--ui-font);
+}
+
+button,
+textarea,
+input {
+  font-family: var(--hand-font);
+}
+
+
+/* final-tweaks: trace written cue is intentionally short */
+.word-limit-note {
+  margin: 4px 0 12px;
+  text-align: right;
+  color: rgba(0,0,0,0.58);
+  font-family: var(--hand-font);
+  font-size: 12px;
+}
+
+
+/* final-tweaks-v2: stop long-press page/text selection during Trace interaction */
+.app,
+.canvas,
+.empty-state,
+.image-box,
+.image-box img,
+.point-layer,
+.trace-point,
+.trace-svg,
+.memory-card,
+.memory-card *,
+.peek-help,
+.placement-pill,
+.soft-btn,
+.topbar,
+.top-icon {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.image-box img {
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+}
+
+.trace-point,
+.point-layer,
+.image-box,
+.canvas {
+  touch-action: none !important;
+}
+
+/* Keep typing normal inside the input popup */
+.memory-modal,
+.memory-modal *,
+textarea,
+input {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+
+/* trace popup fix: translucent memory card that covers less of the photo */
+.memory-card {
+  width: min(218px, 68vw) !important;
+  padding: 12px 14px 11px !important;
+  background: rgba(246, 244, 237, 0.56) !important;
+  border: 1px solid rgba(255, 255, 255, 0.44) !important;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.20) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
+.memory-card::after {
+  display: none !important;
+}
+
+.memory-title,
+.memory-text,
+.voice-row {
+  color: rgba(15, 15, 15, 0.95) !important;
+}
+
+.play-circle {
+  border-color: rgba(15, 15, 15, 0.82) !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+}
+
+.memory-card.outside-photo {
+  background: rgba(248, 246, 239, 0.66) !important;
+}
+
+
+/* trace popup fix v2: lighter card, kept close to the selected point */
+.memory-card {
+  width: min(200px, 64vw) !important;
+  padding: 11px 13px 10px !important;
+  background: rgba(246, 244, 237, 0.42) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16) !important;
+  backdrop-filter: blur(3px) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+}
+
+.memory-card.outside-photo {
+  background: rgba(246, 244, 237, 0.42) !important;
+}
+
+.memory-title,
+.memory-text,
+.voice-row {
+  color: rgba(10, 10, 10, 0.92) !important;
+}
+
+.play-circle {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
